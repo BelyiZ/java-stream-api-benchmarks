@@ -36,18 +36,17 @@ import java.util.stream.IntStream;
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
-@Warmup(iterations = 10)
-@Measurement(iterations = 20)
+@Warmup(iterations = 20)
+@Measurement(iterations = 30)
 @OperationsPerInvocation(1000)
-@Fork(5)
+@Fork(10)
 public class MyBenchmark {
 
     @State(Scope.Benchmark)
     public static class Params {
 
-        private static final int STRINGS_LIST_LENGTH = 100000;
-        private static final int DOUBLES_LIST_LENGTH = 100000;
-        private static final int OBJECTS_LIST_LENGTH = 100000;
+        @Param({"100", "100000", "10000000"})
+        private int size;
 
         private List<String> stringsList;
         private List<Double> doublesList;
@@ -58,17 +57,17 @@ public class MyBenchmark {
 
         @Setup
         public void setup() {
-            stringsList = new ArrayList<>(STRINGS_LIST_LENGTH);
-            doublesList = new ArrayList<>(DOUBLES_LIST_LENGTH);
-            objectsList = new ArrayList<>(OBJECTS_LIST_LENGTH);
+            stringsList = new ArrayList<>(size);
+            doublesList = new ArrayList<>(size);
+            objectsList = new ArrayList<>(size);
             objectsSet = new TreeSet<>();
 
             Random random = new Random();
-            IntStream.range(0, STRINGS_LIST_LENGTH)
+            IntStream.range(0, size)
                     .forEach(i -> stringsList.add(strs[i % strs.length]));
-            IntStream.range(0, DOUBLES_LIST_LENGTH)
+            IntStream.range(0, size)
                     .forEach(i -> doublesList.add(random.nextDouble()));
-            IntStream.range(0, OBJECTS_LIST_LENGTH)
+            IntStream.range(0, size)
                     .forEach(i -> {
                                 User user = new User(random.nextLong(), random.nextInt(100), random.nextInt(999999));
                                 objectsList.add(user);
